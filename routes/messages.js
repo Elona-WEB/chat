@@ -14,7 +14,7 @@ router.get("/", function (req, res, next) {
 /* GET albums listing, si hacemos get, esta función resuelve por id */
 router.get("/:ts", function (req, res, next) {
   //SEQUELIZE
-  Message.findOne({ ts: req.params.ts }).then((result) => {
+  Message.findByPk(req.params.ts).then((result) => {
     if (result == null) {
       res.status(404).send("El mensaje no existe");
     } else {
@@ -27,6 +27,7 @@ router.get("/:ts", function (req, res, next) {
 
 router.post("/", function (req, res, next) {
   //Validacion
+
   const vali = validateMessage(req.body);
   if (vali.error) {
     return res.status(400).send(vali.error.details[0].message);
@@ -34,10 +35,14 @@ router.post("/", function (req, res, next) {
 
   //SQUELIZE
   const { message, author, ts } = req.body;
-  Message.create({ message, author, ts }).then((result) => {
-    console.log(result);
-    res.send(result);
-  });
+  Message.create({ message, author, ts })
+    .then((result) => {
+      console.log(result);
+      res.send(result);
+    })
+    .catch((err) => {
+      res.send(err.errors[0].message);
+    });
 });
 
 router.put("/:ts", function (req, res, next) {
@@ -56,17 +61,16 @@ router.put("/:ts", function (req, res, next) {
 });
 
 //Vamos con el delete
-router.delete("/:1", function (req, res, next) {
-  Message.destroy(
-    { where: { ts: req.params.ts } }.then((result) => {
-      if (result == 0) {
-        return res.send("Message not found");
-      }
-      res.status(200).send("Message deleted!");
-    })
-  );
+router.delete("/:ts", function (req, res, next) {
+  Message.destroy({ where: { ts: req.params.ts } }).then((result) => {
+    if (result == 0) {
+      return res.send("Message not found");
+    }
+    res.status(200).send("Message deleted!");
+  });
 });
 
+//Funciones de validación
 function validateMessage(msg) {
   const schema = Joi.object({
     message: Joi.string().min(5).required(),
@@ -89,9 +93,3 @@ function validatePutMessage(msg) {
 }
 
 module.exports = router;
-
-/**
- * si hago get /albums quiero ver una lista
- * si hago /albums/100 quiero ver el album id 100
- *
- */

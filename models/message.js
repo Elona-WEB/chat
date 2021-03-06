@@ -15,6 +15,7 @@ Message.init(
     },
     ts: {
       type: DataTypes.BIGINT,
+      primaryKey: true,
       allowNull: false,
     },
   },
