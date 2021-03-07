@@ -1,4 +1,5 @@
 const WebSocket = require("ws");
+const Message = require("./models/message");
 
 const clients = [];
 const messages = [];
@@ -11,7 +12,11 @@ const wsConnection = (server) => {
     sendMessages();
 
     ws.on("message", (message) => {
-      messages.push(message);
+      console.log(message);
+      let fin = message.split("|");
+
+      persist(fin[1], fin[0]);
+      messages.push(fin[1]);
       sendMessages();
     });
   });
@@ -20,5 +25,17 @@ const wsConnection = (server) => {
     clients.forEach((client) => client.send(JSON.stringify(messages)));
   };
 };
+
+function persist(msg, auth) {
+  author = auth;
+  message = msg;
+  Message.create({ message, author })
+    .then((result) => {
+      console.log(result);
+    })
+    .catch((err) => {
+      console.log(err.errors[0].message);
+    });
+}
 
 exports.wsConnection = wsConnection;

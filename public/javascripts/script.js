@@ -1,7 +1,8 @@
 const ws = new WebSocket("ws://localhost:3000");
 
 ws.onmessage = (msg) => {
-  renderMessages(JSON.parse(msg.data));
+  let primero = JSON.parse(msg.data);
+  renderMessages(primero);
 };
 
 const renderMessages = (data) => {
@@ -12,8 +13,11 @@ const renderMessages = (data) => {
 const handleSubmit = (evt) => {
   evt.preventDefault();
   const message = document.getElementById("message");
-  ws.send(message.value);
+  const author = document.getElementById("author");
+  var pegar = author.value + "|" + message.value;
+  ws.send(pegar);
   message.value = "";
+  author.value = "";
 };
 
 const form = document.getElementById("form");

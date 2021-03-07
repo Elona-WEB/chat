@@ -3,6 +3,7 @@ var router = express.Router();
 const Joi = require("joi");
 //Vamos con sequelize
 const Message = require("../models/message");
+const { wsConnection } = require("../wslib");
 
 /* GET albums listing, si hacemos get, esta función resuelve */
 router.get("/", function (req, res, next) {

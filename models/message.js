@@ -16,6 +16,7 @@ Message.init(
     ts: {
       type: DataTypes.BIGINT,
       primaryKey: true,
+      autoIncrement: true,
       allowNull: false,
     },
   },
